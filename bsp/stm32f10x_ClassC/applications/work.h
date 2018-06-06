@@ -36,7 +36,7 @@
 
 #define TYPE_C          0x10
 
-#define DEV_TYPE        TYPE_A2
+#define DEV_TYPE        TYPE_C
 
 typedef __packed struct {
 

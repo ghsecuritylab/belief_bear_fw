@@ -10,9 +10,9 @@
 
 static sys_t drying,disinfection,aromatherapy,reserve;
 
+#define THREAD_TFT_REFRESH_PRIORITY     5
 #define THREAD_BUSINESS_PRIORITY        6
 #define THREAD_KEY_SCAN_PRIORITY        7
-#define THREAD_TFT_REFRESH_PRIORITY     8
 
 #define TIME_STEP                       30
 #define RESERVE_STEP                    1
@@ -455,7 +455,7 @@ void ap_key_scan_thread(void *para) {
                 //如果没有设置时间则以默认值运行
                 if (drying.cfg.time == 0 && aromatherapy.cfg.time == 0 && disinfection.cfg.time == 0) {
                     drying.cfg.time = 30;
-                    aromatherapy.cfg.time = 30;
+                    aromatherapy.cfg.time = 15;
                     disinfection.cfg.time = 30;
                 }
                 reserve_time.hour = 0;
@@ -497,7 +497,7 @@ void mrfi_ap(void) {
     
 #if (DEV_TYPE == TYPE_C)     
     tft_tid = rt_thread_create("tft", ap_tft_refresh_thread, RT_NULL, 512, 
-                            THREAD_TFT_REFRESH_PRIORITY, 5);
+                            THREAD_TFT_REFRESH_PRIORITY, 20);
     if (tft_tid != RT_NULL) {
         rt_thread_startup(tft_tid);  
     }
