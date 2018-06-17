@@ -141,12 +141,6 @@ static void rt_hw_gpio_init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
     GPIO_Init(LED_OUT_gpio, &GPIO_InitStructure);		
-    //syatem indicate
-    GPIO_InitStructure.GPIO_Pin = SYS_INDICATE_pin;				
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
-    GPIO_Init(SYS_INDICATE_gpio, &GPIO_InitStructure);	
-    GPIO_SetBits(SYS_INDICATE_gpio,SYS_INDICATE_pin);
     
     //interrupt io
     GPIO_InitStructure.GPIO_Pin  = MAGNETIC_IN_pin;

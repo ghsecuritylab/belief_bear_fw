@@ -1,4 +1,8 @@
 
+
+
+
+
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <stdlib.h>
@@ -10,11 +14,11 @@
 
 static sys_t drying,disinfection,aromatherapy,reserve;
 
-#define THREAD_BUSINESS_PRIORITY        6
-#define THREAD_KEY_SCAN_PRIORITY        7
-#define THREAD_TFT_REFRESH_PRIORITY     8
+#define THREAD_TFT_REFRESH_PRIORITY     6
+#define THREAD_BUSINESS_PRIORITY        7
+#define THREAD_KEY_SCAN_PRIORITY        8
 
-#define TIME_STEP                       30
+#define TIME_STEP                       5
 #define RESERVE_STEP                    1
 
 static rt_thread_t tft_tid = RT_NULL;
@@ -65,7 +69,6 @@ void RTC_IRQHandler(void)
 //	rt_thread_delay(10*RT_TICK_PER_SECOND/1000);//消抖
 //	if(magnetic_input == 1)	 	 //
 //	{				 
-//		LED_ON();	
 //        start_running = 0;  //停掉整个正在运行的系统
 //	}
 //	EXTI_ClearITPendingBit(EXTI_Line0); //清除LINE0上的中断标志位  
@@ -108,9 +111,9 @@ static void clear_all_state(void) {
 
 /*IO需要加0.1uF电容，不然线太长，电压波动不稳*/
 static int magnetic_is_open() {
-    if (magnetic_input == 1) {
-        rt_thread_delay(RT_TICK_PER_SECOND/2);
-        if (magnetic_input == 1) {
+    if (magnetic_input == 0) {
+        rt_thread_delay(200*RT_TICK_PER_SECOND/1000);
+        if (magnetic_input == 0) {
             return 1;
         } else {
             return 0;
@@ -126,11 +129,10 @@ void ap_business_thread(void *para) {
     u32 cur_tick = 0;
     u8 to_day, last_day;
     
-    SYS_ON();
     while (1) {
         IWDG_ReloadCounter();
         rt_thread_delay(RT_TICK_PER_SECOND/10);
-#if (DEV_TYPE == TYPE_C)        
+     
         if (!start_running) {
             DRYING_OFF();      
             AROMATHERAPY_OFF();
@@ -145,7 +147,7 @@ void ap_business_thread(void *para) {
             enable_rtc_irq(0);
             continue ;
         } 
-#endif        
+     
         //烘干
         if (drying.cfg.time > 0) {
             DRYING_ON();
@@ -183,19 +185,16 @@ void ap_business_thread(void *para) {
             DRYING_OFF();
             AROMATHERAPY_OFF();
             DISINFECTION_OFF();
-            LED_ON();
+            LED_LIGHT_ON();
             enable_rtc_irq(0); 
             IWDG_ReloadCounter();
             rt_thread_delay(RT_TICK_PER_SECOND/10);
         }    
-        LED_OFF();
+        LED_LIGHT_OFF();
         enable_rtc_irq(1);
         rt_thread_delay(RT_TICK_PER_SECOND/10);
         //保存结束时间到backup_register
-        if (time_update_flag == 1) {
-#if (DEV_TYPE & TYPE_A)    
-            time_update_flag = 0;
-#endif            
+        if (time_update_flag == 1) {         
             BKP_WriteBackupRegister(BKP_DR2, drying.cfg.time);
             BKP_WriteBackupRegister(BKP_DR3, aromatherapy.cfg.time);
             BKP_WriteBackupRegister(BKP_DR4, disinfection.cfg.time);
@@ -263,10 +262,10 @@ void ap_tft_refresh_thread(void *para) {
                     tft_display_time(disinfection.cfg.time/60,disinfection.cfg.time%60);
                 }
                 rt_thread_delay(100*RT_TICK_PER_SECOND/1000);
-            } 
+            }  
             disinfection.cfg.key_press = 0;
             tft_disinfection(0);
-        } 
+        }  
         //running ...
          if (start_running) {
             tft_reserve(0);
@@ -362,20 +361,24 @@ void ap_key_scan_thread(void *para) {
     static u8 hour_min = 0;
 
     while (1) {
-        //assist key 
+		/*
+		**采用点动模式，按下变高，放开为低
+		*/
         if (increase_input) {
             inc_dec_press = 1;
           //  rt_thread_delay(20*RT_TICK_PER_SECOND/1000);
            // if (increase_input) {
                 (*pointer_time) += step;
+			rt_led_buzzer(5);
           //  }
-            rt_thread_delay(RT_TICK_PER_SECOND/2);
+//            rt_thread_delay(200*RT_TICK_PER_SECOND/1000);
         }
         if (decrease_input) {
             inc_dec_press = 1;
            // rt_thread_delay(20*RT_TICK_PER_SECOND/1000);
            // if (decrease_input) {
                 (*pointer_time) -= step;
+			rt_led_buzzer(6);
           //  }
             rt_thread_delay(RT_TICK_PER_SECOND/2);
         }
@@ -387,7 +390,8 @@ void ap_key_scan_thread(void *para) {
             pointer_time = &drying.cfg.time;
             step = TIME_STEP;
             reset_buff[reset_index++] = 'A';
-            rt_thread_delay(RT_TICK_PER_SECOND/2);
+			rt_led_buzzer(1);
+//            rt_thread_delay(RT_TICK_PER_SECOND/2);
         }
         if (disinfection_input) {
             disinfection.cfg.key_press = 1;
@@ -395,7 +399,8 @@ void ap_key_scan_thread(void *para) {
             pointer_time = &disinfection.cfg.time;
             step = TIME_STEP;
             reset_buff[reset_index++] = 'B';
-            rt_thread_delay(RT_TICK_PER_SECOND/2);
+			rt_led_buzzer(2); 
+//            rt_thread_delay(RT_TICK_PER_SECOND/2);
         }
         if (aromatherapy_input) {
             aromatherapy.cfg.key_press = 1;
@@ -428,7 +433,8 @@ void ap_key_scan_thread(void *para) {
             } 
             reset_index = 0;
             rt_memset(reset_buff,0,4);
-            rt_thread_delay(RT_TICK_PER_SECOND/2);
+			rt_led_buzzer(3);
+//            rt_thread_delay(RT_TICK_PER_SECOND/2);
             
         }
         if (reserve_input) {
@@ -447,7 +453,8 @@ void ap_key_scan_thread(void *para) {
             hour_min ++;
             hour_min %=2; 
             reserve_last_tick = rt_tick_get();
-            rt_thread_delay(RT_TICK_PER_SECOND/2);
+			rt_led_buzzer(4);
+//            rt_thread_delay(RT_TICK_PER_SECOND/2);
         }
         if (power_input || reserve.cfg.time == 1) {
             
@@ -455,7 +462,7 @@ void ap_key_scan_thread(void *para) {
                 //如果没有设置时间则以默认值运行
                 if (drying.cfg.time == 0 && aromatherapy.cfg.time == 0 && disinfection.cfg.time == 0) {
                     drying.cfg.time = 30;
-                    aromatherapy.cfg.time = 30;
+                    aromatherapy.cfg.time = 15;
                     disinfection.cfg.time = 30;
                 }
                 reserve_time.hour = 0;
@@ -468,8 +475,15 @@ void ap_key_scan_thread(void *para) {
                 //stop 
                 clear_all_state();
             }
-            rt_thread_delay(RT_TICK_PER_SECOND/2);
-        }            
+			rt_led_buzzer(7);
+//            rt_thread_delay(RT_TICK_PER_SECOND/2);
+        }
+		/*
+		**采用自锁模式，按下变高锁存，再按下变低锁存
+		*/
+//		if (power_input) {
+//			
+//		}
         rt_thread_delay(RT_TICK_PER_SECOND/100);
     }
 }
@@ -481,23 +495,13 @@ void mrfi_ap(void) {
     drying.cfg.time = BKP_ReadBackupRegister(BKP_DR2);
     aromatherapy.cfg.time = BKP_ReadBackupRegister(BKP_DR3);
     disinfection.cfg.time = BKP_ReadBackupRegister(BKP_DR4);
-#if (DEV_TYPE == TYPE_A1)
-    //Whether the system is reset
-    if (system_power_off == 1) {
-        drying.cfg.time = 30;
-        aromatherapy.cfg.time = 15;
-        disinfection.cfg.time = 30;
-    }
-    enable_rtc_irq(1);
-    start_running = 1;
-#endif    
-//    uint32_t times = BKP_ReadBackupRegister(BKP_DR5);
-//    reserve_time.hour = times / 60;
-//    reserve_time.min = times % 60;
-    
-#if (DEV_TYPE == TYPE_C)     
+ 
+    uint32_t times = BKP_ReadBackupRegister(BKP_DR5);
+    reserve_time.hour = times / 60;
+    reserve_time.min = times % 60;
+       
     tft_tid = rt_thread_create("tft", ap_tft_refresh_thread, RT_NULL, 512, 
-                            THREAD_TFT_REFRESH_PRIORITY, 5);
+                            THREAD_TFT_REFRESH_PRIORITY, 10);
     if (tft_tid != RT_NULL) {
         rt_thread_startup(tft_tid);  
     }
@@ -506,8 +510,7 @@ void mrfi_ap(void) {
                             THREAD_KEY_SCAN_PRIORITY, 5);
     if (key_scan_tid != RT_NULL) {
         rt_thread_startup(key_scan_tid);
-    }
-#endif    
+    }  
     
     business_tid = rt_thread_create("business", ap_business_thread, RT_NULL, 512, 
                             THREAD_BUSINESS_PRIORITY, 5);

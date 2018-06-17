@@ -542,24 +542,3 @@ void show_6464(unsigned int x,unsigned int y,unsigned char index)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

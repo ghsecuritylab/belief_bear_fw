@@ -126,7 +126,6 @@ void ap_business_thread(void *para) {
     u32 cur_tick = 0;
     u8 to_day, last_day;
     
-    SYS_ON();
     while (1) {
         IWDG_ReloadCounter();
         rt_thread_delay(RT_TICK_PER_SECOND/10);

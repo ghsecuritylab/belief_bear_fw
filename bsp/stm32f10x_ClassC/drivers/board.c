@@ -129,26 +129,36 @@ void SYSCLKConfig_STOP(void)
 static void rt_hw_gpio_init(void)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
- 	
+	
+	//关闭JTAG功能，使用GPIO
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable , ENABLE);
+	
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);//使能PB,PE端口时钟
         
     GPIO_InitStructure.GPIO_Pin = DRYING_OUT_pin | DISINFECTION_OUT_pin | AROMATHERAPY_OUT_pin;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
-    GPIO_Init(GPIOA, &GPIO_InitStructure);					 
-    //led                    
-    GPIO_InitStructure.GPIO_Pin = LED_OUT_pin;				 
+    GPIO_Init(GPIOA, &GPIO_InitStructure);			
+	
+    //led output indicate                    
+    GPIO_InitStructure.GPIO_Pin = LED_DRY_pin | LED_ARO_pin | LED_DIS_pin | LED_RESERVE_pin  | LED_POWER_pin;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
-    GPIO_Init(LED_OUT_gpio, &GPIO_InitStructure);		
-    //syatem indicate
-    GPIO_InitStructure.GPIO_Pin = SYS_INDICATE_pin;				
+    GPIO_Init(GPIOA, &GPIO_InitStructure);	
+	
+	GPIO_InitStructure.GPIO_Pin = LED_INC_pin | LED_DEC_pin;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
-    GPIO_Init(SYS_INDICATE_gpio, &GPIO_InitStructure);	
-    GPIO_SetBits(SYS_INDICATE_gpio,SYS_INDICATE_pin);
-    
-    //interrupt io
+    GPIO_Init(GPIOB, &GPIO_InitStructure);	
+	  
+	//buzzer indication
+	GPIO_InitStructure.GPIO_Pin = BUZZER_pin;				 
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
+    GPIO_Init(BUZZER_gpio, &GPIO_InitStructure);	
+
+    //magnetic input io
     GPIO_InitStructure.GPIO_Pin  = MAGNETIC_IN_pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //设置上拉输入
     GPIO_Init(MAGNETIC_IN_gpio, &GPIO_InitStructure);		
@@ -248,6 +258,44 @@ void TIM3_Int_Init(u16 arr,u16 psc)
 	TIM_Cmd(TIM3, ENABLE);  //使能TIMx					 
 }
 
+void rt_led_indication_default(void) {
+	LED_DRY_OFF();
+	LED_ARO_OFF();
+	LED_DIS_OFF();
+	LED_RESERVE_OFF();
+	LED_INC_OFF();
+	LED_DEC_OFF();
+	LED_POWER_OFF();
+	BUZZER_OFF();
+}
+
+//按键指示
+void rt_led_buzzer(u8 bit) {
+	switch (bit) {
+		case 1: LED_DRY_ON(); break; 
+		case 2: LED_DIS_ON(); break;
+		case 3: LED_ARO_ON(); break;
+		case 4: LED_RESERVE_ON(); break;
+		case 5: LED_INC_ON(); break;
+		case 6: LED_DEC_ON(); break;
+		case 7: LED_POWER_ON(); break;
+		default: break;
+	}
+	BUZZER_ON();
+	rt_thread_delay(20*RT_TICK_PER_SECOND/1000);
+	switch (bit) {
+		case 1: LED_DRY_OFF(); break; 
+		case 2: LED_DIS_OFF(); break;
+		case 3: LED_ARO_OFF(); break;
+		case 4: LED_RESERVE_OFF(); break;
+		case 5: LED_INC_OFF(); break;
+		case 6: LED_DEC_OFF(); break;
+		case 7: LED_POWER_OFF(); break;
+		default: break;
+	}
+	BUZZER_OFF();
+}
+
 void rt_hw_enable_watchdog(void) {
     // Time = (64/(32*10^3))*625 = 1.25s
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
@@ -271,13 +319,11 @@ void rt_hw_board_init(void)
     rt_hw_gpio_init();
  //   TIM3_Int_Init(4999,7199);//10Khz的计数频率，计数到5000为500ms  
 //    EXTIX_Init();
-    
-#if (DEV_TYPE == TYPE_C)    
+ 
     Display_Init();
-#endif
+
     rtc_init();
-    
-    sys_restart = 1;
+	rt_led_indication_default();
         
 //#ifdef RT_USING_SERIAL
 //    rt_hw_usart_init();

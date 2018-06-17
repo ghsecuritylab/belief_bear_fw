@@ -102,7 +102,7 @@ void rtthread_startup(void)
 #ifdef CFG_ACCESS_POINT
 	extern int mrfi_ap(void);
 	mrfi_ap();
-    rt_hw_enable_watchdog();
+//    rt_hw_enable_watchdog();
 #endif
 
     /* start scheduler */

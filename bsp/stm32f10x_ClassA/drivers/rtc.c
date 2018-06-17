@@ -70,10 +70,10 @@ uint8_t rtc_init(void) {
         rtc_time_get(&tdat);
     }
 //        tdat.year = 2018;
-//        tdat.month = 5;
-//        tdat.day = 12;
-//        tdat.hour = 17;
-//        tdat.min = 25;
+//        tdat.month = 6;
+//        tdat.day = 15;
+//        tdat.hour = 13;
+//        tdat.min = 33;
 //        tdat.sec = 0;
 //        rtc_time_set(&tdat);
 //        BKP_WriteBackupRegister(BKP_DR1, CONFIGURATION_RESET);

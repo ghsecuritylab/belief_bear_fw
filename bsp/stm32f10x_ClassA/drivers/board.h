@@ -47,32 +47,32 @@
 //scan key
 #define DRYING_IN_rcc                       RCC_AHBPeriph_GPIOB
 #define DRYING_IN_gpio                      GPIOB
-#define DRYING_IN_pin                       (GPIO_Pin_8)
-
-#define DISINFECTION_IN_rcc                 RCC_AHBPeriph_GPIOB
-#define DISINFECTION_IN_gpio                GPIOB
-#define DISINFECTION_IN_pin                 (GPIO_Pin_7)
+#define DRYING_IN_pin                       (GPIO_Pin_0)
 
 #define AROMATHERAPY_IN_rcc                 RCC_AHBPeriph_GPIOB
 #define AROMATHERAPY_IN_gpio                GPIOB
-#define AROMATHERAPY_IN_pin                 (GPIO_Pin_6)
+#define AROMATHERAPY_IN_pin                 (GPIO_Pin_2)
+
+#define DISINFECTION_IN_rcc                 RCC_AHBPeriph_GPIOB
+#define DISINFECTION_IN_gpio                GPIOB
+#define DISINFECTION_IN_pin                 (GPIO_Pin_2)
 
 #define RESERVE_IN_rcc                      RCC_AHBPeriph_GPIOB
 #define RESERVE_IN_gpio                     GPIOB
-#define RESERVE_IN_pin                      (GPIO_Pin_5)
+#define RESERVE_IN_pin                      (GPIO_Pin_6)
 
 #define POWER_IN_rcc                        RCC_AHBPeriph_GPIOA
 #define POWER_IN_gpio                       GPIOA
-#define POWER_IN_pin                        (GPIO_Pin_15)
+#define POWER_IN_pin                        (GPIO_Pin_7)
 
 //interrupt input
 #define INCREASE_IN_rcc                     RCC_AHBPeriph_GPIOB
 #define INCREASE_IN_gpio                    GPIOB
-#define INCREASE_IN_pin                     (GPIO_Pin_4)
+#define INCREASE_IN_pin                     (GPIO_Pin_8)
 
 #define DECREASE_IN_rcc                     RCC_AHBPeriph_GPIOB
 #define DECREASE_IN_gpio                    GPIOB
-#define DECREASE_IN_pin                     (GPIO_Pin_3)
+#define DECREASE_IN_pin                     (GPIO_Pin_7)
 
 #define MAGNETIC_IN_rcc                     RCC_AHBPeriph_GPIOB
 #define MAGNETIC_IN_gpio                    GPIOB
@@ -99,9 +99,6 @@
 #define LED_OUT_gpio                        GPIOC
 #define LED_OUT_pin                         (GPIO_Pin_13)
 
-#define SYS_INDICATE_rcc                    RCC_AHBPeriph_GPIOA
-#define SYS_INDICATE_gpio                   GPIOA
-#define SYS_INDICATE_pin                    (GPIO_Pin_10)
 //////////////////////////////////////////////////////////////////////////////
 
 //—≠ª∑…®√Ë
@@ -142,10 +139,6 @@ static inline void LED_ON(void)  {
 }
 static inline void LED_OFF(void) {
     GPIO_ResetBits(LED_OUT_gpio,LED_OUT_pin);
-}
-//system indicate
-static inline void SYS_ON(void) {
-    GPIO_ResetBits(SYS_INDICATE_gpio,SYS_INDICATE_pin);
 }
 
 
