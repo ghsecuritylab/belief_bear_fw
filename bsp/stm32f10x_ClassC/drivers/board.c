@@ -94,7 +94,7 @@ void SysTick_Handler(void)
                                  | RCC_AHBPeriph_DMA1 | RCC_AHBPeriph_DMA2      \
                                  | RCC_AHBPeriph_AES | RCC_AHBPeriph_FSMC)
 
-
+/*
 //HSE ~ 8*9=72MHZ
 void SYSCLK_Config(void){
     
@@ -115,16 +115,7 @@ void SYSCLK_Config(void){
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB|
                             RCC_APB2Periph_GPIOC, ENABLE); 
 }
-
-
-void SYSCLKConfig_STOP(void)
-{  
-	/* After wake-up from STOP reconfigure the system clock */
-	RCC_HSICmd(ENABLE); 
-	while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
-	RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);
-	while (RCC_GetSYSCLKSource() != 0x04);
-}
+*/
 
 static void rt_hw_gpio_init(void)
 {
@@ -142,12 +133,12 @@ static void rt_hw_gpio_init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);			
 	
     //led output indicate                    
-    GPIO_InitStructure.GPIO_Pin = LED_DRY_pin | LED_ARO_pin | LED_DIS_pin | LED_RESERVE_pin  | LED_POWER_pin;				 
+    GPIO_InitStructure.GPIO_Pin = LED_DRY_pin | LED_ARO_pin | LED_DIS_pin | LED_POWER_pin;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
     GPIO_Init(GPIOA, &GPIO_InitStructure);	
 	
-	GPIO_InitStructure.GPIO_Pin = LED_INC_pin | LED_DEC_pin;				 
+	GPIO_InitStructure.GPIO_Pin = LED_INC_pin | LED_DEC_pin | LED_RESERVE_pin;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
     GPIO_Init(GPIOB, &GPIO_InitStructure);	
@@ -282,7 +273,9 @@ void rt_led_buzzer(u8 bit) {
 		default: break;
 	}
 	BUZZER_ON();
+    rt_enter_critical();
 	rt_thread_delay(20*RT_TICK_PER_SECOND/1000);
+    rt_exit_critical();
 	switch (bit) {
 		case 1: LED_DRY_OFF(); break; 
 		case 2: LED_DIS_OFF(); break;

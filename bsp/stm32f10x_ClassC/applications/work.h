@@ -53,6 +53,14 @@ typedef __packed union _sys_t {
     
 }sys_t;
 
+typedef enum _sys_s {
+    READY = 0,
+    RUNNING,
+//    SUSPEND,
+    SET_TIME,
+    RESERVE_TIME,
+    
+}sys_s;
 
 
 #endif /* end of __WORK_H__ */

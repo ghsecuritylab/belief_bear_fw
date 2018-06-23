@@ -95,14 +95,10 @@ void rtthread_startup(void)
     /* init idle thread */
     rt_thread_idle_init();
 
-//#ifdef CFG_END_DEVICE
-//    extern void mrfi_init(void);
-//    mrfi_init();
-//#endif
 #ifdef CFG_ACCESS_POINT
 	extern int mrfi_ap(void);
 	mrfi_ap();
-//    rt_hw_enable_watchdog();
+    rt_hw_enable_watchdog();
 #endif
 
     /* start scheduler */
