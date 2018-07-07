@@ -130,7 +130,12 @@ static void rt_hw_gpio_init(void)
     GPIO_InitStructure.GPIO_Pin = DRYING_OUT_pin | DISINFECTION_OUT_pin | AROMATHERAPY_OUT_pin;				 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
-    GPIO_Init(GPIOA, &GPIO_InitStructure);			
+    GPIO_Init(GPIOA, &GPIO_InitStructure);	
+
+    GPIO_InitStructure.GPIO_Pin = LED_LIGHT_OUT_pin;				 
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		
+    GPIO_Init(GPIOC, &GPIO_InitStructure);		
 	
     //led output indicate                    
     GPIO_InitStructure.GPIO_Pin = LED_DRY_pin | LED_ARO_pin | LED_DIS_pin | LED_POWER_pin;				 

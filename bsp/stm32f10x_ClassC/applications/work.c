@@ -48,8 +48,8 @@ void RTC_IRQHandler(void)
 {		 
 	if (RTC_GetITStatus(RTC_IT_SEC) != RESET)//秒钟中断
 	{
-//        if (++sec_cnt == 60) {
-        if (++sec_cnt == 2) {
+        if (++sec_cnt == 60) {
+//        if (++sec_cnt == 2) {
             sec_cnt = 0;
             time_update_flag = 1;
             if (drying.cfg.time > 0) {
@@ -108,7 +108,19 @@ void ap_business_thread(void *para) {
     while (1) {
         IWDG_ReloadCounter();
         rt_thread_delay(RT_TICK_PER_SECOND/10);
-     
+		
+		//磁控门打开
+        while (magnetic_is_open()) {
+
+            DRYING_OFF();
+            AROMATHERAPY_OFF();
+            DISINFECTION_OFF();
+            LED_LIGHT_ON();
+            enable_rtc_irq(0); 
+            IWDG_ReloadCounter();
+            rt_thread_delay(RT_TICK_PER_SECOND/10);
+        }  
+		LED_LIGHT_OFF();
         if (sys_status != RUNNING) {
             DRYING_OFF();      
             AROMATHERAPY_OFF();
@@ -156,18 +168,6 @@ void ap_business_thread(void *para) {
             DISINFECTION_OFF();
             disinfection.cfg.switch_state = 0;
         }
-        //磁控门打开
-//        while (magnetic_is_open()) {
-
-//            DRYING_OFF();
-//            AROMATHERAPY_OFF();
-//            DISINFECTION_OFF();
-//            LED_LIGHT_ON();
-//            enable_rtc_irq(0); 
-//            IWDG_ReloadCounter();
-//            rt_thread_delay(RT_TICK_PER_SECOND/10);
-//        }    
-        LED_LIGHT_OFF();
         enable_rtc_irq(1);
         rt_thread_delay(RT_TICK_PER_SECOND/10);
         //保存结束时间到backup_register      
