@@ -169,12 +169,13 @@ void ap_business_thread(void *para) {
                 DISINFECTION_ON();
                 disinfection.cfg.switch_state = 1;
             } else {
-                DISINFECTION_OFF();
-                disinfection.cfg.switch_state = 0;
-                disinfection.cfg.key_press = 0;
                 enable_rtc_irq(0); 
                 start_running = 0;  //end of running
             }
+        } else {
+            DISINFECTION_OFF();
+            disinfection.cfg.switch_state = 0;
+            disinfection.cfg.key_press = 0;
         }
         //´Å¿ØÃÅ´ò¿ª
         while (magnetic_is_open()) {
