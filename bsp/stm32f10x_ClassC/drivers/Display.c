@@ -24,7 +24,7 @@ void Display_Init(void)
     LCD_Clear(BACK_COLOR); //清屏
 	
 	xianshi(); //显示信息
-	
+    OLED_BLK_Set();
 }
 
 

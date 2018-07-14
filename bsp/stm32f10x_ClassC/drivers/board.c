@@ -265,6 +265,16 @@ void rt_led_indication_default(void) {
 	BUZZER_OFF();
 }
 
+static inline void delay_us(u16 delay) {
+	u16 i, j;
+	for (i=0; i<9; i++)
+		for (j=0; j<delay; j++);
+}
+static void _delay(uint16_t ms) {
+
+    for (uint16_t i=0; i<ms; i++)
+        delay_us(1000);
+}
 //°´¼üÖ¸Ê¾
 void rt_led_buzzer(u8 bit) {
 	switch (bit) {
@@ -279,7 +289,7 @@ void rt_led_buzzer(u8 bit) {
 	}
     rt_enter_critical();
 	BUZZER_ON();
-	rt_thread_delay(20*RT_TICK_PER_SECOND/1000);
+    _delay(20);
 	switch (bit) {
 		case 1: LED_DRY_OFF(); break; 
 		case 2: LED_DIS_OFF(); break;

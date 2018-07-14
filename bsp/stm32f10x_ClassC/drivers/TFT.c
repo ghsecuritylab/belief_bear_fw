@@ -93,7 +93,7 @@ void Lcd_Init(void)
 	_delay(20);
 	OLED_RST_Set();
 	_delay(20);
-	OLED_BLK_Set();
+//	OLED_BLK_Set();
 	
 //************* Start Initial Sequence **********// 
 LCD_WR_REG(0xCF);  
