@@ -49,27 +49,25 @@
 #define X_WIDTH 	128
 #define Y_WIDTH 	64	    						  
 //-----------------OLED¶Ë¿Ú¶¨Òå---------------- 
-//#define OLED_SCLK_Clr()     GPIO_ResetBits(GPIOB, GPIO_Pin_15)//CLK
-//#define OLED_SCLK_Set()     GPIO_SetBits(GPIOB,GPIO_Pin_15)
-//#define OLED_SCLK_Clr()     GPIOB->BRR = GPIO_Pin_15
-//#define OLED_SCLK_Set()     GPIOB->BSRR = GPIO_Pin_15 
-#define OLED_SCLK_Clr()     PBout(15) = 0 
-#define OLED_SCLK_Set()     PBout(15) = 1 
+#define OLED_SCLK_Clr()     GPIO_ResetBits(GPIOB, GPIO_Pin_15)//CLK
+#define OLED_SCLK_Set()     GPIO_SetBits(GPIOB,GPIO_Pin_15)
+//#define OLED_SCLK_Clr()     PBout(15) = 0 
+//#define OLED_SCLK_Set()     PBout(15) = 1 
 
-//#define OLED_SDIN_Clr()     GPIO_ResetBits(GPIOB,GPIO_Pin_13)//DIN
-//#define OLED_SDIN_Set()     GPIO_SetBits(GPIOB,GPIO_Pin_13)
-#define OLED_SDIN_Clr()     PBout(13) = 0 
-#define OLED_SDIN_Set()     PBout(13) = 1
+#define OLED_SDIN_Clr()     GPIO_ResetBits(GPIOB,GPIO_Pin_13)//DIN
+#define OLED_SDIN_Set()     GPIO_SetBits(GPIOB,GPIO_Pin_13)
+//#define OLED_SDIN_Clr()     PBout(13) = 0 
+//#define OLED_SDIN_Set()     PBout(13) = 1
 
-//#define OLED_RST_Clr()      GPIO_ResetBits(GPIOA,GPIO_Pin_8)//RES
-//#define OLED_RST_Set()      GPIO_SetBits(GPIOA,GPIO_Pin_8)
-#define OLED_RST_Clr()      PAout(8) = 0//RES
-#define OLED_RST_Set()      PAout(8) = 1
+#define OLED_RST_Clr()      GPIO_ResetBits(GPIOA,GPIO_Pin_8)//RES
+#define OLED_RST_Set()      GPIO_SetBits(GPIOA,GPIO_Pin_8)
+//#define OLED_RST_Clr()      PAout(8) = 0//RES
+//#define OLED_RST_Set()      PAout(8) = 1
 
-//#define OLED_DC_Clr()       GPIO_ResetBits(GPIOB,GPIO_Pin_14)//DC
-//#define OLED_DC_Set()       GPIO_SetBits(GPIOB,GPIO_Pin_14)
-#define OLED_DC_Clr()       PBout(14) = 0 
-#define OLED_DC_Set()       PBout(14) = 1 
+#define OLED_DC_Clr()       GPIO_ResetBits(GPIOB,GPIO_Pin_14)//DC
+#define OLED_DC_Set()       GPIO_SetBits(GPIOB,GPIO_Pin_14)
+//#define OLED_DC_Clr()       PBout(14) = 0 
+//#define OLED_DC_Set()       PBout(14) = 1 
  
 #define OLED_BLK_Clr()      GPIO_ResetBits(GPIOB,GPIO_Pin_11)//CS
 #define OLED_BLK_Set()      GPIO_SetBits(GPIOB,GPIO_Pin_11)

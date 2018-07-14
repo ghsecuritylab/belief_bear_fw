@@ -277,10 +277,9 @@ void rt_led_buzzer(u8 bit) {
 		case 7: LED_POWER_ON(); break;
 		default: break;
 	}
-	BUZZER_ON();
     rt_enter_critical();
+	BUZZER_ON();
 	rt_thread_delay(20*RT_TICK_PER_SECOND/1000);
-    rt_exit_critical();
 	switch (bit) {
 		case 1: LED_DRY_OFF(); break; 
 		case 2: LED_DIS_OFF(); break;
@@ -292,13 +291,15 @@ void rt_led_buzzer(u8 bit) {
 		default: break;
 	}
 	BUZZER_OFF();
+    rt_exit_critical();
 }
 
 void rt_hw_enable_watchdog(void) {
     // Time = (64/(32*10^3))*625 = 1.25s
+    // Time = (256/(72*10^3))*2500 = 9s
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
-    IWDG_SetPrescaler(IWDG_Prescaler_64);
-    IWDG_SetReload(1250);  //625
+    IWDG_SetPrescaler(IWDG_Prescaler_256);
+    IWDG_SetReload(2500); 
     IWDG_ReloadCounter();
     IWDG_Enable();
 }

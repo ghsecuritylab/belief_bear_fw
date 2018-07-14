@@ -169,6 +169,9 @@ void ap_business_thread(void *para) {
                 DISINFECTION_ON();
                 disinfection.cfg.switch_state = 1;
             } else {
+                DISINFECTION_OFF();
+                disinfection.cfg.switch_state = 0;
+                disinfection.cfg.key_press = 0;
                 enable_rtc_irq(0); 
                 start_running = 0;  //end of running
             }
@@ -211,6 +214,9 @@ void ap_business_thread(void *para) {
     if (to_day == 1 && dtime.hour == 0x07 && dtime.min == 0x1E) {
         
         to_day = 0;
+//        drying.cfg.time = 2;
+//        aromatherapy.cfg.time = 1;
+//        disinfection.cfg.time = 2;
         drying.cfg.time = 30;
         aromatherapy.cfg.time = 15;
         disinfection.cfg.time = 30;
